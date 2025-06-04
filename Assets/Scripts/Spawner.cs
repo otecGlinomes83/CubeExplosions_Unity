@@ -1,26 +1,29 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Cube _ñubePrefab;
-    [SerializeField] private Cube _initialCube;
+    [SerializeField] private Cube _cubePrefab;
 
-    public event Action<Cube> CubeSpawned;
+    [SerializeField] private ColorChanger _colorChanger;
+    [SerializeField] private Exploder _exploder;
+
+   [SerializeField,Min(2)] private int _initCubesCount = 2;
 
     private List<Cube> _activeCubes = new List<Cube>();
 
     private int _maxSpawnCount = 6;
     private int _minSpawnCount = 2;
+
     private float _scaleDivider = 2f;
     private float _chanceDivider = 2f;
 
-    private void OnEnable()
+    private void Start()
     {
-        SubscribeToCube(_initialCube);
+        for (int i = 0; i < _initCubesCount; i++)
+        {
+            SubscribeToCube(Instantiate(_cubePrefab));
+        }
     }
 
     private void OnDisable()
@@ -33,24 +36,30 @@ public class Spawner : MonoBehaviour
         _activeCubes.Clear();
     }
 
-    private void SubscribeToCube(Cube cube)
+    private void SubscribeToCube(Cube createdCube)
     {
-        cube.Divided += Spawn;
-        _activeCubes.Add(cube);
+        createdCube.Divided += Spawn;
+        _activeCubes.Add(createdCube);
     }
 
-    private void Spawn(Cube ParentCube)
+    private void Spawn(Cube parentCube)
     {
-        int spawnCount = UnityEngine.Random.Range(_minSpawnCount, _maxSpawnCount + 1);
+        int spawnCount = Random.Range(_minSpawnCount, _maxSpawnCount + 1);
 
         for (int i = 0; i < spawnCount; i++)
         {
-            Cube currentCube = Instantiate(_ñubePrefab, ParentCube.transform.position, Quaternion.identity);
+            Cube createdCube = Instantiate(_cubePrefab, parentCube.transform.position, Quaternion.identity);
 
-            currentCube.Initialize(ParentCube.CurrentDivideChance / _chanceDivider, ParentCube.transform.localScale / _scaleDivider);
-            SubscribeToCube(currentCube);
+            createdCube.Initialize
+                (
+                parentCube.CurrentDivideChance / _chanceDivider,
+                parentCube.transform.localScale / _scaleDivider,
+                _colorChanger.GenerateRandomColor()
+                );
 
-            CubeSpawned?.Invoke(currentCube);
+            _exploder.Explode(createdCube, parentCube.transform.position);
+
+            SubscribeToCube(createdCube);
         }
     }
 }
