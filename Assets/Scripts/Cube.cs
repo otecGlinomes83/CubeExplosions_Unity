@@ -12,10 +12,14 @@ public class Cube : MonoBehaviour
     public float CurrentDivideChance { get; private set; } = 100f;
     public Rigidbody Rigidbody { get; private set; }
 
-    public void Initialize(float currentDivideChance, Vector3 scale, UnityEngine.Color color)
+    public void Initialize(float currentDivideChance, Vector3 scale)
     {
         CurrentDivideChance = currentDivideChance;
         transform.localScale = scale;
+    }
+
+    public void ChangeColor(Color color)
+    {
         _renderer.material.color = color;
     }
 
