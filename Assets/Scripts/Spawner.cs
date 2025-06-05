@@ -5,10 +5,10 @@ public class Spawner : MonoBehaviour
 {
     [SerializeField] private Cube _cubePrefab;
 
-    [SerializeField] private ColorChanger _colorChanger;
-    [SerializeField] private Exploder _exploder;
+    [SerializeField, Min(2)] private int _initCubesCount = 2;
 
-   [SerializeField,Min(2)] private int _initCubesCount = 2;
+    private ColorChanger _colorChanger = new ColorChanger();
+    private Exploder _exploder = new Exploder();
 
     private List<Cube> _activeCubes = new List<Cube>();
 
@@ -53,13 +53,44 @@ public class Spawner : MonoBehaviour
             createdCube.Initialize
                 (
                 parentCube.CurrentDivideChance / _chanceDivider,
-                parentCube.transform.localScale / _scaleDivider,
-                _colorChanger.GenerateRandomColor()
+                parentCube.transform.localScale / _scaleDivider
                 );
+
+            _colorChanger.ChangeColor(createdCube.Renderer);
 
             _exploder.Explode(createdCube, parentCube.transform.position);
 
             SubscribeToCube(createdCube);
         }
     }
+}
+
+public class Exploder
+{
+    private float _explosionForce = 500f;
+    private float _explosionRadius = 5f;
+
+    public void Explode(Cube createdCube, Vector3 explosionPosition)
+    {
+        createdCube.Rigidbody.AddExplosionForce(_explosionForce, explosionPosition, _explosionRadius);
+    }
+}
+
+public class ColorChanger
+{
+    private float _minColorValue = 0f;
+    private float _maxColorValue = 1f;
+
+    public void ChangeColor(MeshRenderer cubeRenderer)
+    {
+        cubeRenderer.material.color = GenerateRandomColor();
+    }
+
+    private Color GenerateRandomColor() =>
+            new Color
+            (
+             Random.Range(_minColorValue, _maxColorValue),
+             Random.Range(_minColorValue, _maxColorValue),
+             Random.Range(_minColorValue, _maxColorValue)
+            );
 }

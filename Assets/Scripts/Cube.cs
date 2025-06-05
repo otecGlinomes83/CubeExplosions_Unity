@@ -1,36 +1,30 @@
 using System;
+using Assets.Scripts;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody), typeof(MeshRenderer))]
 
-public class Cube : MonoBehaviour
+public class Cube : MonoBehaviour, IInteractable
 {
     public event Action<Cube> Divided;
 
-    private MeshRenderer _renderer;
-
-    public float CurrentDivideChance { get; private set; } = 100f;
+    public MeshRenderer Renderer { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
+    public float CurrentDivideChance { get; private set; } = 100f;
 
-    public void Initialize(float currentDivideChance, Vector3 scale, Color color)
+    public void Initialize(float currentDivideChance, Vector3 scale)
     {
         CurrentDivideChance = currentDivideChance;
         transform.localScale = scale;
-        _renderer.material.color = color;
     }
 
     private void Awake()
     {
-        _renderer = GetComponent<MeshRenderer>();
+        Renderer = GetComponent<MeshRenderer>();
         Rigidbody = GetComponent<Rigidbody>();
     }
 
-    private void OnMouseDown()
-    {
-        Divide();
-    }
-
-    private void Divide()
+    public void Interact()
     {
         float maxChance = 100f;
         float minChance = 0f;
