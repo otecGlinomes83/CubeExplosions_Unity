@@ -8,6 +8,8 @@ public class Cube : MonoBehaviour, IInteractable
 {
     public event Action<Cube> Divided;
 
+    private Exploder _exploder = new Exploder();
+
     public MeshRenderer Renderer { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
     public float CurrentDivideChance { get; private set; } = 100f;
@@ -31,18 +33,18 @@ public class Cube : MonoBehaviour, IInteractable
 
         float chance = UnityEngine.Random.Range(minChance, maxChance);
 
-        if (chance >= CurrentDivideChance)
-        {
-            Destroy(gameObject);
-        }
-        else
+        if (chance <= CurrentDivideChance)
         {
             Vector3 position = transform.position;
             Vector3 scale = transform.localScale;
 
             Divided?.Invoke(this);
-
-            Destroy(gameObject);
         }
+        else
+        {
+            _exploder.Explode(this);
+        }
+
+        Destroy(gameObject);
     }
 }

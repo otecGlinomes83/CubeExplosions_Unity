@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    [SerializeField] private Transform _spawnPoint;
+
     [SerializeField] private Cube _cubePrefab;
 
     [SerializeField, Min(2)] private int _initCubesCount = 2;
@@ -22,7 +24,7 @@ public class Spawner : MonoBehaviour
     {
         for (int i = 0; i < _initCubesCount; i++)
         {
-            SubscribeToCube(Instantiate(_cubePrefab));
+            SubscribeToCube(Instantiate(_cubePrefab, _spawnPoint));
         }
     }
 
@@ -58,39 +60,9 @@ public class Spawner : MonoBehaviour
 
             _colorChanger.ChangeColor(createdCube.Renderer);
 
-            _exploder.Explode(createdCube, parentCube.transform.position);
+            _exploder.Explode(createdCube,parentCube.transform.position);
 
             SubscribeToCube(createdCube);
         }
     }
-}
-
-public class Exploder
-{
-    private float _explosionForce = 500f;
-    private float _explosionRadius = 5f;
-
-    public void Explode(Cube createdCube, Vector3 explosionPosition)
-    {
-        createdCube.Rigidbody.AddExplosionForce(_explosionForce, explosionPosition, _explosionRadius);
-    }
-}
-
-public class ColorChanger
-{
-    private float _minColorValue = 0f;
-    private float _maxColorValue = 1f;
-
-    public void ChangeColor(MeshRenderer cubeRenderer)
-    {
-        cubeRenderer.material.color = GenerateRandomColor();
-    }
-
-    private Color GenerateRandomColor() =>
-            new Color
-            (
-             Random.Range(_minColorValue, _maxColorValue),
-             Random.Range(_minColorValue, _maxColorValue),
-             Random.Range(_minColorValue, _maxColorValue)
-            );
 }
