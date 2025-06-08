@@ -1,10 +1,12 @@
-using Assets.Scripts;
+using System;
 using UnityEngine;
 
 public class ClickDetector : MonoBehaviour
 {
     [SerializeField] private Camera _camera;
     [SerializeField] private float _rayLength;
+
+    public event Action<Cube> CubeClicked;
 
     private void Update()
     {
@@ -21,14 +23,14 @@ public class ClickDetector : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, _rayLength))
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            Cube cube = hit.collider.GetComponent<Cube>();
 
-            if (interactable == null)
+            if (cube == null)
             {
                 return;
             }
 
-            interactable.Interact();
+            CubeClicked?.Invoke(cube);
         }
     }
 }
