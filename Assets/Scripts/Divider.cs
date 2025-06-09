@@ -1,13 +1,25 @@
 ﻿using System;
 using UnityEngine;
 
-internal class Divider:MonoBehaviour
+internal class Divider : MonoBehaviour
 {
-    public event Action<Cube> Divided;
+    [SerializeField] private ClickDetector _clickDetector;
+
+    public event Action<Cube> CubeDivided;
 
     private Exploder _exploder = new Exploder();
 
-    public void Divide(Cube cube)
+    private void OnEnable()
+    {
+        _clickDetector.CubeClicked += TryDivide;
+    }
+
+    private void OnDisable()
+    {
+        _clickDetector.CubeClicked -= TryDivide;
+    }
+
+    public void TryDivide(Cube cube)
     {
         float maxChance = 100f;
         float minChance = 0f;
@@ -19,11 +31,11 @@ internal class Divider:MonoBehaviour
             Vector3 position = cube.transform.position;
             Vector3 scale = cube.transform.localScale;
 
-            Divided?.Invoke(cube);
+            CubeDivided?.Invoke(cube);
         }
         else
         {
-            _exploder.Explode(cube);
+            _exploder.ExplodeAllCubes(cube);
         }
 
         Destroy(cube.gameObject);

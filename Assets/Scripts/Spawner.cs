@@ -5,13 +5,12 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Cube _cubePrefab;
 
+    [SerializeField] private Divider _divider;
+
     [SerializeField, Min(2)] private int _initCubesCount = 2;
 
     private ColorChanger _colorChanger = new ColorChanger();
     private Exploder _exploder = new Exploder();
-
-    private Divider _divider;
-    private ClickDetector _clickDetector;
 
     private int _maxSpawnCount = 6;
     private int _minSpawnCount = 2;
@@ -19,22 +18,14 @@ public class Spawner : MonoBehaviour
     private float _scaleDivider = 2f;
     private float _chanceDivider = 2f;
 
-    private void Awake()
-    {
-        _clickDetector = GetComponent<ClickDetector>();
-        _divider = GetComponent<Divider>();
-    }
-
     private void OnEnable()
     {
-        _clickDetector.CubeClicked += _divider.Divide;
-        _divider.Divided += Spawn;
+        _divider.CubeDivided += Spawn;
     }
 
     private void OnDisable()
     {
-        _clickDetector.CubeClicked -= _divider.Divide;
-        _divider.Divided -= Spawn;
+        _divider.CubeDivided -= Spawn;
     }
 
     private void Start()
@@ -55,6 +46,7 @@ public class Spawner : MonoBehaviour
         float newDivideChance = parentCube.CurrentDivideChance / _chanceDivider;
         Vector3 newScale = parentCube.transform.localScale / _scaleDivider;
 
+
         for (int i = 0; i < spawnCount; i++)
         {
             Cube createdCube = Instantiate(_cubePrefab, parentPosition, Quaternion.identity);
@@ -62,7 +54,7 @@ public class Spawner : MonoBehaviour
             createdCube.Initialize(newDivideChance, newScale);
 
             _colorChanger.ChangeColor(createdCube.Renderer);
-            _exploder.Explode(createdCube, parentPosition);
+            _exploder.ExplodeChildCubes(createdCube, parentPosition);
         }
     }
 }

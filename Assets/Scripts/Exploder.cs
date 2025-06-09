@@ -6,12 +6,12 @@ public class Exploder
     private float _defaultExplosionForce = 2000f;
     private float _defaultExplosionRadius = 10f;
 
-    public void Explode(Cube createdCube, Vector3 explosionPosition)
+    public void ExplodeChildCubes(Cube createdCube, Vector3 explosionPosition)
     {
         createdCube.Rigidbody.AddExplosionForce(_defaultExplosionForce, explosionPosition, _defaultExplosionRadius);
     }
 
-    public void Explode(Cube parentCube)
+    public void ExplodeAllCubes(Cube parentCube)
     {
         Vector3 explosionPosition = parentCube.transform.position;
 
